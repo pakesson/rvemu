@@ -64,7 +64,6 @@ impl Emulator {
                     ((self.memory[address+1] as u64) << 8) |
                     ((self.memory[address+2] as u64) << 16) |
                     ((self.memory[address+3] as u64) << 24);
-                println!("Lw address {:08x} value {:08x}", address, value);
                 self.setreg(
                     inst.rd,
                     value,
