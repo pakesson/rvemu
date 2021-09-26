@@ -1,5 +1,13 @@
-example1.o: example1.s
-	riscv64-linux-gnu-as -march=rv64i -o example1.o example1.s
+FILES = example1.bin
+
+%.o: %.s
+	riscv64-linux-gnu-as -march=rv64i -o $@ $<
+
+%.bin: %.o
+	riscv64-linux-gnu-objcopy -O binary $< $@
+
+all: $(FILES)
 
 clean:
-	rm -f example1.o
+	rm -f *.o
+	rm -f *.bin
