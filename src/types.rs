@@ -77,24 +77,24 @@ mod test {
     #[test]
     fn test_decode_itype() {
         let inst = Itype::from(0x80152583); // lw	a1,-2047(a0)
-        assert_eq!(inst.rs1, 10);       // base
-        assert_eq!(inst.rd, 11);        // dst
+        assert_eq!(inst.rs1, 10); // base
+        assert_eq!(inst.rd, 11); // dst
         assert_eq!(inst.funct3, 0b010); // width
-        assert_eq!(inst.imm, -2047);    // offset
+        assert_eq!(inst.imm, -2047); // offset
     }
 
     #[test]
     fn test_decode_stype() {
         let inst = Stype::from(0x80b520a3); // sw	a1,-2047(a0)
-        assert_eq!(inst.rs1, 10);       // base
-        assert_eq!(inst.rs2, 11);       // src
+        assert_eq!(inst.rs1, 10); // base
+        assert_eq!(inst.rs2, 11); // src
         assert_eq!(inst.funct3, 0b010); // width
-        assert_eq!(inst.imm, -2047);    // offset
+        assert_eq!(inst.imm, -2047); // offset
 
         let inst = Stype::from(0x7eb52fa3); // sw	a1,2047(a0)
-        assert_eq!(inst.rs1, 10);       // base
-        assert_eq!(inst.rs2, 11);       // src
+        assert_eq!(inst.rs1, 10); // base
+        assert_eq!(inst.rs2, 11); // src
         assert_eq!(inst.funct3, 0b010); // width
-        assert_eq!(inst.imm, 2047);    // offset
+        assert_eq!(inst.imm, 2047); // offset
     }
 }

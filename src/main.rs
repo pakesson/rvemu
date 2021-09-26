@@ -1,7 +1,7 @@
 mod emulator;
 mod types;
 
-use emulator::{Emulator};
+use emulator::Emulator;
 
 fn main() {
     let code = vec![
