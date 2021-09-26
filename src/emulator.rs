@@ -115,6 +115,7 @@ impl Emulator {
             0b0000011 => {
                 // LOAD
                 println!("unsupported opcode LOAD 0x{:08x}", inst);
+                let _inst = Itype::from(inst);
             },
             0b0000111 => {
                 // LOAD-FP
@@ -149,6 +150,7 @@ impl Emulator {
             0b0100011 => {
                 // STORE
                 println!("unsupported opcode STORE 0x{:08x}", inst);
+                let _inst = Stype::from(inst);
             },
             0b0100111 => {
                 // STORE-FP
@@ -249,5 +251,43 @@ mod test {
         emu.run();
 
         assert_eq!(emu.getreg(10), 0x0a);
+    }
+
+    #[test]
+    fn test_auipc_lw() {
+        let code = vec![
+            0x13, 0x05, 0x10, 0x00, // li	  a0,1
+            0x97, 0x05, 0x00, 0x00, // auipc  a1,0x0
+            0x83, 0xa5, 0x05, 0x00, // lw     a1,0(a1)
+        ];
+
+        let mut emu = Emulator::new(code);
+        emu.run();
+
+        assert_eq!(emu.getreg(11), 0x00100513);
+    }
+
+    #[test]
+    fn test_decode_itype() {
+        let inst = Itype::from(0x80152583); // lw	a1,-2047(a0)
+        assert_eq!(inst.rs1, 10);       // base
+        assert_eq!(inst.rd, 11);        // dst
+        assert_eq!(inst.funct3, 0b010); // width
+        assert_eq!(inst.imm, -2047);    // offset
+    }
+
+    #[test]
+    fn test_decode_stype() {
+        let inst = Stype::from(0x80b520a3); // sw	a1,-2047(a0)
+        assert_eq!(inst.rs1, 10);       // base
+        assert_eq!(inst.rs2, 11);       // src
+        assert_eq!(inst.funct3, 0b010); // width
+        assert_eq!(inst.imm, -2047);    // offset
+
+        let inst = Stype::from(0x7eb52fa3); // sw	a1,2047(a0)
+        assert_eq!(inst.rs1, 10);       // base
+        assert_eq!(inst.rs2, 11);       // src
+        assert_eq!(inst.funct3, 0b010); // width
+        assert_eq!(inst.imm, 2047);    // offset
     }
 }
