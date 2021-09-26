@@ -1,4 +1,6 @@
+mod decoder;
 mod emulator;
+mod instruction;
 mod types;
 
 use emulator::Emulator;
