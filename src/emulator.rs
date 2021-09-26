@@ -51,6 +51,9 @@ impl Emulator {
                     self.getreg(inst.rs1).wrapping_add(inst.imm as i64 as u64),
                 );
             }
+            Instruction::Andi(inst) => {
+                self.setreg(inst.rd, (inst.imm as i64 as u64) & self.getreg(inst.rs1))
+            }
             Instruction::Auipc(inst) => {
                 self.setreg(
                     inst.rd,
@@ -60,14 +63,41 @@ impl Emulator {
             }
             Instruction::Lw(inst) => {
                 let address = self.getreg(inst.rs1).wrapping_add(inst.imm as i64 as u64) as usize;
-                let value = self.memory[address]  as u64 |
-                    ((self.memory[address+1] as u64) << 8) |
-                    ((self.memory[address+2] as u64) << 16) |
-                    ((self.memory[address+3] as u64) << 24);
+                let value = self.memory[address] as u64
+                    | ((self.memory[address + 1] as u64) << 8)
+                    | ((self.memory[address + 2] as u64) << 16)
+                    | ((self.memory[address + 3] as u64) << 24);
+                self.setreg(inst.rd, value);
+            }
+            Instruction::Ori(inst) => {
+                self.setreg(inst.rd, (inst.imm as i64 as u64) | self.getreg(inst.rs1))
+            }
+            Instruction::Slli(inst) => {
+                let shamt = inst.imm & 0b111111; // Shift amount
+                self.setreg(inst.rd, self.getreg(inst.rs1) << shamt);
+            }
+            Instruction::Slti(inst) => {
                 self.setreg(
                     inst.rd,
-                    value,
+                    ((self.getreg(inst.rs1) as i64) < (inst.imm as i64)) as u64,
                 );
+            }
+            Instruction::Sltiu(inst) => {
+                self.setreg(
+                    inst.rd,
+                    (self.getreg(inst.rs1) < (inst.imm as i64 as u64)) as u64,
+                );
+            }
+            Instruction::Srai(inst) => {
+                let shamt = inst.imm & 0b111111; // Shift amount
+                self.setreg(inst.rd, ((self.getreg(inst.rs1) as i64) >> shamt) as u64);
+            }
+            Instruction::Srli(inst) => {
+                let shamt = inst.imm & 0b111111; // Shift amount
+                self.setreg(inst.rd, self.getreg(inst.rs1) >> shamt);
+            }
+            Instruction::Xori(inst) => {
+                self.setreg(inst.rd, (inst.imm as i64 as u64) ^ self.getreg(inst.rs1))
             }
         }
     }

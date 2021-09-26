@@ -36,6 +36,35 @@ pub fn decode_instruction(inst: u32) -> Result<Instruction, DecodingError> {
                         // ADDI
                         Ok(Instruction::Addi(inst))
                     }
+                    0b010 => {
+                        // SLTI
+                        Ok(Instruction::Slti(inst))
+                    }
+                    0b011 => {
+                        // SLTIU
+                        Ok(Instruction::Sltiu(inst))
+                    }
+                    0b100 => {
+                        // XORI
+                        Ok(Instruction::Xori(inst))
+                    }
+                    0b110 => {
+                        // ORI
+                        Ok(Instruction::Ori(inst))
+                    }
+                    0b111 => {
+                        // ANDI
+                        Ok(Instruction::Andi(inst))
+                    }
+                    0b001 => {
+                        // SLLI
+                        Ok(Instruction::Slli(inst))
+                    }
+                    0b101 => match (inst.imm >> 10) & 0b1 {
+                        0 => Ok(Instruction::Srli(inst)),
+                        1 => Ok(Instruction::Srai(inst)),
+                        _ => unreachable!(),
+                    },
                     _ => {
                         println!("Unsupported funct3 {:#02x} in OP-IMM inst", inst.funct3);
                         Err(DecodingError::Unsupported)
