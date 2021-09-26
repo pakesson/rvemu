@@ -1,4 +1,5 @@
 mod emulator;
+mod types;
 
 use emulator::{Emulator};
 
