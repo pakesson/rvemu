@@ -51,6 +51,25 @@ impl Emulator {
                     self.getreg(inst.rs1).wrapping_add(inst.imm as i64 as u64),
                 );
             }
+            Instruction::Auipc(inst) => {
+                self.setreg(
+                    inst.rd,
+                    // PC has already been increased
+                    self.pc.wrapping_sub(4).wrapping_add(inst.imm as i64 as u64),
+                );
+            }
+            Instruction::Lw(inst) => {
+                let address = self.getreg(inst.rs1).wrapping_add(inst.imm as i64 as u64) as usize;
+                let value = self.memory[address]  as u64 |
+                    ((self.memory[address+1] as u64) << 8) |
+                    ((self.memory[address+2] as u64) << 16) |
+                    ((self.memory[address+3] as u64) << 24);
+                println!("Lw address {:08x} value {:08x}", address, value);
+                self.setreg(
+                    inst.rd,
+                    value,
+                );
+            }
         }
     }
 
@@ -88,14 +107,13 @@ mod test {
     #[test]
     fn test_auipc_lw() {
         let code = vec![
-            0x13, 0x05, 0x10, 0x00, // li	  a0,1
-            0x97, 0x05, 0x00, 0x00, // auipc  a1,0x0
-            0x83, 0xa5, 0x05, 0x00, // lw     a1,0(a1)
+            0x17, 0x05, 0x00, 0x00, // auipc a0,0x0
+            0x03, 0x25, 0x05, 0x00, // lw    a0,0(a0)
         ];
 
         let mut emu = Emulator::new(code);
         emu.run();
 
-        assert_eq!(emu.getreg(11), 0x00100513);
+        assert_eq!(emu.getreg(10), 0x00000517);
     }
 }

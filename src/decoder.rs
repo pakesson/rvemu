@@ -1,5 +1,5 @@
 use crate::instruction::Instruction;
-use crate::types::{Itype, Rtype, Stype};
+use crate::types::{Itype, Rtype, Stype, Utype};
 
 #[derive(Debug)]
 pub enum DecodingError {
@@ -12,9 +12,11 @@ pub fn decode_instruction(inst: u32) -> Result<Instruction, DecodingError> {
         0b11 => match opcode {
             0b0000011 => {
                 // LOAD
-                println!("unsupported opcode LOAD 0x{:08x}", inst);
-                let _inst = Itype::from(inst);
-                Err(DecodingError::Unsupported)
+                let inst = Itype::from(inst);
+                match inst.funct3 & 0b111 {
+                    0b010 => Ok(Instruction::Lw(inst)),
+                    _ => Err(DecodingError::Unsupported),
+                }
             }
             0b0000111 => {
                 // LOAD-FP
@@ -42,8 +44,8 @@ pub fn decode_instruction(inst: u32) -> Result<Instruction, DecodingError> {
             }
             0b0010111 => {
                 // AUIPC
-                println!("unsupported opcode AUIPC 0x{:08x}", inst);
-                Err(DecodingError::Unsupported)
+                let inst = Utype::from(inst);
+                Ok(Instruction::Auipc(inst))
             }
             0b0011011 => {
                 // OP-IMM-32
