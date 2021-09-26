@@ -84,6 +84,16 @@ impl Emulator {
             self.execute_instruction(decoded_inst);
         }
     }
+
+    pub fn print_state(&self) {
+        for i in (0..32).step_by(4) {
+            print!("{:>3} = 0x{:08x} ", format!("x{}", i), self.regs[i]);
+            print!("{:>3} = 0x{:08x} ", format!("x{}", i+1), self.regs[i+1]);
+            print!("{:>3} = 0x{:08x} ", format!("x{}", i+2), self.regs[i+2]);
+            print!("{:>3} = 0x{:08x}\n", format!("x{}", i+3), self.regs[i+3]);
+        }
+        println!(" pc = 0x{:08x}", self.pc);
+    }
 }
 
 #[cfg(test)]
