@@ -174,3 +174,24 @@ pub fn decode_instruction(inst: u32) -> Result<Instruction, DecodingError> {
         _ => Err(DecodingError::Unsupported), // Compressed instruction
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_decode() {
+        assert_eq!(
+            decode_instruction(0x00457593).unwrap(),
+            Instruction::Andi(Itype::from(0x00457593))
+        );
+        assert_eq!(
+            decode_instruction(0x00256613).unwrap(),
+            Instruction::Ori(Itype::from(0x00256613))
+        );
+        assert_eq!(
+            decode_instruction(0x00a54693).unwrap(),
+            Instruction::Xori(Itype::from(0x00a54693))
+        );
+    }
+}

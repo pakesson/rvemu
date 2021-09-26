@@ -1,3 +1,4 @@
+#[derive(Debug, PartialEq)]
 pub struct Rtype {
     pub rd: usize,
     pub funct3: u32,
@@ -18,6 +19,7 @@ impl From<u32> for Rtype {
     }
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Itype {
     pub rd: usize,
     pub funct3: u32,
@@ -36,6 +38,7 @@ impl From<u32> for Itype {
     }
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Stype {
     pub imm: i32,
     pub funct3: u32,
@@ -54,6 +57,7 @@ impl From<u32> for Stype {
     }
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Utype {
     pub rd: usize,
     pub imm: i32,

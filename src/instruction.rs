@@ -1,5 +1,6 @@
 use crate::types::{Itype, Rtype, Utype};
 
+#[derive(Debug, PartialEq)]
 pub enum Instruction {
     Add(Rtype),
     Addi(Itype),

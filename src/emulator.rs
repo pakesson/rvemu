@@ -159,4 +159,22 @@ mod test {
 
         assert_eq!(emu.getreg(10), 0x00000517);
     }
+
+    #[test]
+    fn test_andi_ori_xori() {
+        let code = vec![
+            0x13, 0x05, 0x50, 0x00, // li   a0,5
+            0x93, 0x75, 0x45, 0x00, // andi a1,a0,4
+            0x13, 0x66, 0x25, 0x00, // ori  a2,a0,2
+            0x93, 0x46, 0xa5, 0x00, // xori a3,a0,10
+        ];
+
+        let mut emu = Emulator::new(code);
+        emu.run();
+
+        assert_eq!(emu.getreg(10), 0x00000005);
+        assert_eq!(emu.getreg(11), 0x00000004);
+        assert_eq!(emu.getreg(12), 0x00000007);
+        assert_eq!(emu.getreg(13), 0x0000000f);
+    }
 }
