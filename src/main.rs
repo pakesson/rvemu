@@ -3,15 +3,27 @@ mod emulator;
 mod instruction;
 mod types;
 
+use std::env;
+use std::fs::File;
+use std::io::prelude::*;
+
 use emulator::Emulator;
 
-fn main() {
-    let code = vec![
-        0x13, 0x05, 0x60, 0x00, // addi a0,x0,6 (li a0,6)
-        0x93, 0x05, 0x40, 0x00, // addi a1,x0,4 (li a1,4)
-        0x33, 0x05, 0xb5, 0x00, // add a0,a0,a1
-    ];
+fn main() -> Result<(), std::io::Error> {
+    let args: Vec<String> = env::args().collect();
 
-    let mut emu = Emulator::new(code);
+    if args.len() != 2 {
+        println!("Usage: {} <filename>", args[0]);
+        return Ok(());
+    }
+    let mut file = File::open(&args[1])?;
+    let mut data = Vec::new();
+    file.read_to_end(&mut data)?;
+
+    let mut emu = Emulator::new(data);
     emu.run();
+
+    emu.print_state();
+
+    Ok(())
 }
