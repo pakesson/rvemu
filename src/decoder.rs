@@ -1,5 +1,5 @@
 use crate::instruction::Instruction;
-use crate::types::{Itype, Rtype, Stype, Utype};
+use crate::types::{Btype, Itype, Jtype, Rtype, Stype, Utype};
 
 #[derive(Debug)]
 pub enum DecodingError {
@@ -14,7 +14,11 @@ pub fn decode_instruction(inst: u32) -> Result<Instruction, DecodingError> {
                 // LOAD
                 let inst = Itype::from(inst);
                 match inst.funct3 & 0b111 {
+                    0b000 => Ok(Instruction::Lb(inst)),
+                    0b001 => Ok(Instruction::Lh(inst)),
                     0b010 => Ok(Instruction::Lw(inst)),
+                    0b100 => Ok(Instruction::Lbu(inst)),
+                    0b101 => Ok(Instruction::Lhu(inst)),
                     _ => Err(DecodingError::Unsupported),
                 }
             }
@@ -83,9 +87,13 @@ pub fn decode_instruction(inst: u32) -> Result<Instruction, DecodingError> {
             }
             0b01000 => {
                 // STORE
-                println!("unsupported opcode STORE 0x{:08x}", inst);
-                let _inst = Stype::from(inst);
-                Err(DecodingError::Unsupported)
+                let inst = Stype::from(inst);
+                match inst.funct3 & 0b111 {
+                    0b000 => Ok(Instruction::Sb(inst)),
+                    0b001 => Ok(Instruction::Sh(inst)),
+                    0b010 => Ok(Instruction::Sw(inst)),
+                    _ => Err(DecodingError::Unsupported),
+                }
             }
             0b01001 => {
                 // STORE-FP
@@ -101,10 +109,20 @@ pub fn decode_instruction(inst: u32) -> Result<Instruction, DecodingError> {
                 // OP
                 let inst = Rtype::from(inst);
                 match inst.funct3 {
-                    0b000 => {
-                        // ADD
-                        Ok(Instruction::Add(inst))
-                    }
+                    0b000 => match (inst.funct7 >> 6) & 0b1 {
+                        0 => Ok(Instruction::Add(inst)),
+                        1 => Ok(Instruction::Sub(inst)),
+                        _ => unreachable!(),
+                    },
+                    0b001 => Ok(Instruction::Sll(inst)),
+                    0b010 => Ok(Instruction::Slt(inst)),
+                    0b011 => Ok(Instruction::Sltu(inst)),
+                    0b100 => Ok(Instruction::Xor(inst)),
+                    0b101 => match (inst.funct7 >> 6) & 0b1 {
+                        0 => Ok(Instruction::Add(inst)),
+                        1 => Ok(Instruction::Sub(inst)),
+                        _ => unreachable!(),
+                    },
                     _ => {
                         println!("Unsupported funct3 {:#02x} in OP inst", inst.funct3);
                         Err(DecodingError::Unsupported)
@@ -113,8 +131,8 @@ pub fn decode_instruction(inst: u32) -> Result<Instruction, DecodingError> {
             }
             0b01101 => {
                 // LUI
-                println!("unsupported opcode LUI 0x{:08x}", inst);
-                Err(DecodingError::Unsupported)
+                let inst = Utype::from(inst);
+                Ok(Instruction::Lui(inst))
             }
             0b01110 => {
                 // OP-32
@@ -148,18 +166,31 @@ pub fn decode_instruction(inst: u32) -> Result<Instruction, DecodingError> {
             }
             0b11000 => {
                 // BRANCH
-                println!("unsupported opcode BRANCH 0x{:08x}", inst);
-                Err(DecodingError::Unsupported)
+                let inst = Btype::from(inst);
+                match inst.funct3 {
+                    0b000 => Ok(Instruction::Beq(inst)),
+                    0b001 => Ok(Instruction::Bne(inst)),
+                    0b100 => Ok(Instruction::Blt(inst)),
+                    0b101 => Ok(Instruction::Bge(inst)),
+                    0b110 => Ok(Instruction::Bltu(inst)),
+                    0b111 => Ok(Instruction::Bgeu(inst)),
+                    _ => Err(DecodingError::Unsupported),
+                }
             }
             0b11001 => {
-                // JALR
-                println!("unsupported opcode JALR 0x{:08x}", inst);
-                Err(DecodingError::Unsupported)
+                let inst = Itype::from(inst);
+                match inst.funct3 {
+                    0b000 => {
+                        // JALR
+                        Ok(Instruction::Jalr(inst))
+                    }
+                    _ => Err(DecodingError::Unsupported),
+                }
             }
             0b11011 => {
                 // JAL
-                println!("unsupported opcode JAL 0x{:08x}", inst);
-                Err(DecodingError::Unsupported)
+                let inst = Jtype::from(inst);
+                Ok(Instruction::Jal(inst))
             }
             0b11100 => {
                 // SYSTEM
