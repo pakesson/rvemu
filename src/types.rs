@@ -72,7 +72,45 @@ impl From<u32> for Utype {
     }
 }
 
-// TODO: Add Btype and Jtype instructions
+#[derive(Debug, PartialEq)]
+pub struct Btype {
+    pub funct3: u32,
+    pub rs1: usize,
+    pub rs2: usize,
+    pub imm: i32,
+}
+
+impl From<u32> for Btype {
+    fn from(inst: u32) -> Self {
+        Self {
+            funct3: ((inst >> 12) & 0x7),
+            rs1: ((inst >> 15) & 0x1f) as usize,
+            rs2: ((inst >> 20) & 0x1f) as usize,
+            imm: (((inst & 0x80000000) >> 19)
+                | ((inst & 0x7e000000) >> 20)
+                | ((inst & 0x00000f00) >> 7)
+                | ((inst & 0x00000080) << 4)) as i32,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct Jtype {
+    pub rd: usize,
+    pub imm: i32,
+}
+
+impl From<u32> for Jtype {
+    fn from(inst: u32) -> Self {
+        Self {
+            rd: ((inst >> 7) & 0x1f) as usize,
+            imm: (((inst & 0x80000000) >> 11)
+                | ((inst & 0x7fe00000) >> 20)
+                | ((inst & 0x00100000) >> 9)
+                | (inst & 0x000ff000)) as i32,
+        }
+    }
+}
 
 #[cfg(test)]
 mod test {
