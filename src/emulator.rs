@@ -51,6 +51,9 @@ impl Emulator {
                     self.getreg(inst.rs1).wrapping_add(inst.imm as i64 as u64),
                 );
             }
+            Instruction::And(inst) => {
+                self.setreg(inst.rd, self.getreg(inst.rs1) & self.getreg(inst.rs2))
+            }
             Instruction::Andi(inst) => {
                 self.setreg(inst.rd, (inst.imm as i64 as u64) & self.getreg(inst.rs1))
             }
@@ -140,6 +143,9 @@ impl Emulator {
                     | ((self.memory[address + 3] as u64) << 24);
                 self.setreg(inst.rd, value);
             }
+            Instruction::Or(inst) => {
+                self.setreg(inst.rd, self.getreg(inst.rs1) | self.getreg(inst.rs2))
+            }
             Instruction::Ori(inst) => {
                 self.setreg(inst.rd, (inst.imm as i64 as u64) | self.getreg(inst.rs1))
             }
@@ -185,9 +191,17 @@ impl Emulator {
                     (self.getreg(inst.rs1) < self.getreg(inst.rs2)) as u64,
                 );
             }
+            Instruction::Sra(inst) => {
+                let shamt = self.getreg(inst.rs2) & 0b11111; // Shift amount
+                self.setreg(inst.rd, ((self.getreg(inst.rs1) as i64) >> shamt) as u64);
+            }
             Instruction::Srai(inst) => {
                 let shamt = inst.imm & 0b111111; // Shift amount
                 self.setreg(inst.rd, ((self.getreg(inst.rs1) as i64) >> shamt) as u64);
+            }
+            Instruction::Srl(inst) => {
+                let shamt = self.getreg(inst.rs2) & 0b11111; // Shift amount
+                self.setreg(inst.rd, self.getreg(inst.rs1) >> shamt);
             }
             Instruction::Srli(inst) => {
                 let shamt = inst.imm & 0b111111; // Shift amount

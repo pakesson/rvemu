@@ -119,10 +119,12 @@ pub fn decode_instruction(inst: u32) -> Result<Instruction, DecodingError> {
                     0b011 => Ok(Instruction::Sltu(inst)),
                     0b100 => Ok(Instruction::Xor(inst)),
                     0b101 => match (inst.funct7 >> 6) & 0b1 {
-                        0 => Ok(Instruction::Add(inst)),
-                        1 => Ok(Instruction::Sub(inst)),
+                        0 => Ok(Instruction::Srl(inst)),
+                        1 => Ok(Instruction::Sra(inst)),
                         _ => unreachable!(),
                     },
+                    0b110 => Ok(Instruction::Or(inst)),
+                    0b111 => Ok(Instruction::And(inst)),
                     _ => {
                         println!("Unsupported funct3 {:#02x} in OP inst", inst.funct3);
                         Err(DecodingError::Unsupported)
