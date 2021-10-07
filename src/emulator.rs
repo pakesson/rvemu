@@ -164,7 +164,7 @@ impl Emulator {
                 self.setreg(inst.rd, self.getreg(inst.rs1) << shamt);
             }
             Instruction::Slli(inst) => {
-                let shamt = inst.imm & 0b111111; // Shift amount
+                let shamt = inst.imm & 0b11111; // Shift amount
                 self.setreg(inst.rd, self.getreg(inst.rs1) << shamt);
             }
             Instruction::Slt(inst) => {
@@ -196,7 +196,7 @@ impl Emulator {
                 self.setreg(inst.rd, ((self.getreg(inst.rs1) as i64) >> shamt) as u64);
             }
             Instruction::Srai(inst) => {
-                let shamt = inst.imm & 0b111111; // Shift amount
+                let shamt = inst.imm & 0b11111; // Shift amount
                 self.setreg(inst.rd, ((self.getreg(inst.rs1) as i64) >> shamt) as u64);
             }
             Instruction::Srl(inst) => {
@@ -204,7 +204,7 @@ impl Emulator {
                 self.setreg(inst.rd, self.getreg(inst.rs1) >> shamt);
             }
             Instruction::Srli(inst) => {
-                let shamt = inst.imm & 0b111111; // Shift amount
+                let shamt = inst.imm & 0b11111; // Shift amount
                 self.setreg(inst.rd, self.getreg(inst.rs1) >> shamt);
             }
             Instruction::Sub(inst) => {
