@@ -83,7 +83,7 @@ impl Emulator {
                 }
             }
             Instruction::Bge(inst) => {
-                if (self.getreg(inst.rs1) as i64) > (self.getreg(inst.rs2) as i64) {
+                if (self.getreg(inst.rs1) as i64) >= (self.getreg(inst.rs2) as i64) {
                     // PC has already been increased
                     self.pc = self.pc.wrapping_sub(4).wrapping_add(inst.imm as i64 as u64);
                 }
@@ -95,7 +95,7 @@ impl Emulator {
                 }
             }
             Instruction::Bgeu(inst) => {
-                if self.getreg(inst.rs1) > self.getreg(inst.rs2) {
+                if self.getreg(inst.rs1) >= self.getreg(inst.rs2) {
                     // PC has already been increased
                     self.pc = self.pc.wrapping_sub(4).wrapping_add(inst.imm as i64 as u64);
                 }
